@@ -62,13 +62,13 @@ objects:
               effect: NoSchedule
           domain:
             cpu:
-              cores: 2
+              cores: 1
             resources:
               requests:
-                cpu: "2"
+                cpu: "1"
                 memory: "4Gi"
               limits:
-                cpu: "2"
+                cpu: "1"
                 memory: "4Gi"
             devices:
               disks:
@@ -157,13 +157,13 @@ objects:
               effect: NoSchedule
           domain:
             cpu:
-              cores: 2
+              cores: 1
             resources:
               requests:
-                cpu: "200m"
+                cpu: "100m"
                 memory: "4Gi"
               limits:
-                cpu: "2"
+                cpu: "1"
                 memory: "4Gi"
             devices:
               disks:

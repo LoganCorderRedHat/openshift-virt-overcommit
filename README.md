@@ -130,9 +130,9 @@ Namespace: `overcommit-not-enabled`
 
 ```text
 Template: fedora-vm-1to1
-Guest vCPU: 1
-CPU request: 1
-CPU limit: 1
+Guest vCPU: 2
+CPU request: 2
+CPU limit: 2
 Node selector: demo-overcommit=one-to-one
 Run strategy: Always
 ```
@@ -140,9 +140,9 @@ Run strategy: Always
 Meaning:
 
 ```text
-The guest sees 1 vCPU.
-OpenShift reserves 1 CPU.
-The VM can use up to 1 CPU.
+The guest sees 2 vCPU.
+OpenShift reserves 2 CPU.
+The VM can use up to 2 CPU.
 This is 1:1 CPU reservation.
 ```
 
@@ -152,9 +152,9 @@ Namespace: `overcommit-enabled`
 
 ```text
 Template: fedora-vm-10to1
-Guest vCPU: 1
-CPU request: 100m
-CPU limit: 1
+Guest vCPU: 2
+CPU request: 200m
+CPU limit: 2
 Node selector: overcommit-node=true
 Run strategy: Always
 ```
@@ -162,9 +162,9 @@ Run strategy: Always
 Meaning:
 
 ```text
-The guest sees 1 vCPU.
-OpenShift reserves 100m CPU.
-The VM can use up to 1 CPU.
+The guest sees 2 vCPU.
+OpenShift reserves 200m CPU.
+The VM can use up to 2 CPU.
 This is 10:1 CPU overcommit.
 ```
 
@@ -196,7 +196,7 @@ Create 10 VMs from the 1:1 template:
 ```bash
 oc project overcommit-not-enabled
 
-for i in $(seq -w 1 10); do
+for i in $(seq -w 1 20); do
   oc process fedora-vm-1to1 \
     -n overcommit-not-enabled \
     -p NAME=vm-1to1-$i \
@@ -209,7 +209,7 @@ Create 10 VMs from the 10:1 template:
 ```bash
 oc project overcommit-enabled
 
-for i in $(seq -w 1 10); do
+for i in $(seq -w 1 20); do
   oc process fedora-vm-10to1 \
     -n overcommit-enabled \
     -p NAME=vm-10to1-$i \
