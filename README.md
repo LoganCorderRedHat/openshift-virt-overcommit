@@ -64,7 +64,7 @@ Both templates use a Fedora `containerDisk` image for a lightweight demo experie
 
 ## Prerequisites
 
-- This is intented to run on Experiece OpenShift Virtualiztion Roadshow (2026) on demo.redhat.com
+- This is intented to run on OpenShift Ops Day Roadshow on demo.redhat.com
 - An OpenShift cluster with OpenShift Virtualization installed.
 - Two worker nodes available for the demo.
 - Cluster-admin, or equivalent permissions to create namespaces, templates, and VMs.
@@ -82,10 +82,6 @@ oc label node <overcommit-worker> overcommit-node=true
 
 Optional, but recommended for a clean demo, taint the two workers so only demo VMs with matching tolerations land there:
 
-```bash
-oc adm taint node <one-to-one-worker> demo-overcommit=one-to-one:NoSchedule
-oc adm taint node <overcommit-worker> overcommit-node=true:NoSchedule
-```
 
 Validate the labels:
 
@@ -102,11 +98,6 @@ Use plain `oc apply`:
 oc apply -f deploy/overcommit-demo-templates.yaml
 ```
 
-Or use Kustomize:
-
-```bash
-oc apply -k .
-```
 
 Validate that the templates exist:
 
@@ -130,9 +121,9 @@ Namespace: `overcommit-not-enabled`
 
 ```text
 Template: fedora-vm-1to1
-Guest vCPU: 2
-CPU request: 2
-CPU limit: 2
+Guest vCPU: 1
+CPU request: 1
+CPU limit: 1
 Node selector: demo-overcommit=one-to-one
 Run strategy: Always
 ```
@@ -140,9 +131,9 @@ Run strategy: Always
 Meaning:
 
 ```text
-The guest sees 2 vCPU.
-OpenShift reserves 2 CPU.
-The VM can use up to 2 CPU.
+The guest sees 1 vCPU.
+OpenShift reserves 1 CPU.
+The VM can use up to 1 CPU.
 This is 1:1 CPU reservation.
 ```
 
@@ -152,9 +143,9 @@ Namespace: `overcommit-enabled`
 
 ```text
 Template: fedora-vm-10to1
-Guest vCPU: 2
-CPU request: 200m
-CPU limit: 2
+Guest vCPU: 1
+CPU request: 100m
+CPU limit: 1
 Node selector: overcommit-node=true
 Run strategy: Always
 ```
