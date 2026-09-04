@@ -35,8 +35,6 @@ If the 1:1 worker has less than 10 allocatable CPUs, the 1:1 side should fail to
 ```text
 ocp-virt-overcommit-demo/
 ├── README.md
-├── LICENSE
-├── kustomization.yaml
 ├── deploy/
 │   └── overcommit-demo-templates.yaml
 ├── promql/
@@ -66,6 +64,7 @@ Both templates use a Fedora `containerDisk` image for a lightweight demo experie
 
 ## Prerequisites
 
+- This is intented to run on Experiece OpenShift Virtualiztion Roadshow (2026) on demo.redhat.com
 - An OpenShift cluster with OpenShift Virtualization installed.
 - Two worker nodes available for the demo.
 - Cluster-admin, or equivalent permissions to create namespaces, templates, and VMs.
