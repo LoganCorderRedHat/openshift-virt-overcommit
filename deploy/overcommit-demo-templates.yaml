@@ -1,0 +1,205 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: overcommit-not-enabled
+  labels:
+    demo.kubevirt.io/name: cpu-overcommit
+    demo.kubevirt.io/model: one-to-one
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: overcommit-enabled
+  labels:
+    demo.kubevirt.io/name: cpu-overcommit
+    demo.kubevirt.io/model: ten-to-one
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: fedora-vm-1to1
+  namespace: overcommit-not-enabled
+  labels:
+    template.kubevirt.io/type: vm
+    demo.kubevirt.io/name: cpu-overcommit
+    demo.kubevirt.io/model: one-to-one
+    os.template.kubevirt.io/fedora: "true"
+    workload.template.kubevirt.io/server: "true"
+  annotations:
+    name.os.template.kubevirt.io/fedora: Fedora
+    description: Fedora VM template for the OpenShift Virtualization CPU overcommit demo. This 1:1 template exposes 1 vCPU and reserves 1 CPU.
+    openshift.io/display-name: Fedora VM, 1:1 CPU
+    iconClass: icon-fedora
+objects:
+  - apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+      name: "${NAME}"
+      namespace: overcommit-not-enabled
+      labels:
+        app: "${NAME}"
+        vm.kubevirt.io/template: fedora-vm-1to1
+        demo.kubevirt.io/name: cpu-overcommit
+        demo.kubevirt.io/model: one-to-one
+        os.template.kubevirt.io/fedora: "true"
+      annotations:
+        description: Fedora VM, 1:1 CPU reservation
+    spec:
+      runStrategy: Always
+      template:
+        metadata:
+          labels:
+            kubevirt.io/domain: "${NAME}"
+            demo.kubevirt.io/name: cpu-overcommit
+            demo.kubevirt.io/model: one-to-one
+        spec:
+          nodeSelector:
+            demo-overcommit: one-to-one
+          tolerations:
+            - key: demo-overcommit
+              operator: Equal
+              value: one-to-one
+              effect: NoSchedule
+          domain:
+            cpu:
+              cores: 1
+            resources:
+              requests:
+                cpu: "1"
+                memory: "1Gi"
+              limits:
+                cpu: "1"
+                memory: "1Gi"
+            devices:
+              disks:
+                - name: containerdisk
+                  disk:
+                    bus: virtio
+                - name: cloudinitdisk
+                  disk:
+                    bus: virtio
+              interfaces:
+                - name: default
+                  masquerade: {}
+                  model: virtio
+              networkInterfaceMultiqueue: true
+              rng: {}
+          networks:
+            - name: default
+              pod: {}
+          terminationGracePeriodSeconds: 180
+          volumes:
+            - name: containerdisk
+              containerDisk:
+                image: quay.io/containerdisks/fedora:latest
+            - name: cloudinitdisk
+              cloudInitNoCloud:
+                userData: |-
+                  #cloud-config
+                  user: fedora
+                  password: "${CLOUD_USER_PASSWORD}"
+                  chpasswd: { expire: False }
+                  ssh_pwauth: True
+parameters:
+  - name: NAME
+    description: Name for the new VM
+    generate: expression
+    from: "vm-1to1-[a-z0-9]{8}"
+  - name: CLOUD_USER_PASSWORD
+    description: Password for the cloud-init fedora user
+    value: redhat
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: fedora-vm-10to1
+  namespace: overcommit-enabled
+  labels:
+    template.kubevirt.io/type: vm
+    demo.kubevirt.io/name: cpu-overcommit
+    demo.kubevirt.io/model: ten-to-one
+    os.template.kubevirt.io/fedora: "true"
+    workload.template.kubevirt.io/server: "true"
+  annotations:
+    name.os.template.kubevirt.io/fedora: Fedora
+    description: Fedora VM template for the OpenShift Virtualization CPU overcommit demo. This 10:1 template exposes 1 vCPU, reserves 100m CPU, and allows up to 1 CPU.
+    openshift.io/display-name: Fedora VM, 10:1 CPU overcommit
+    iconClass: icon-fedora
+objects:
+  - apiVersion: kubevirt.io/v1
+    kind: VirtualMachine
+    metadata:
+      name: "${NAME}"
+      namespace: overcommit-enabled
+      labels:
+        app: "${NAME}"
+        vm.kubevirt.io/template: fedora-vm-10to1
+        demo.kubevirt.io/name: cpu-overcommit
+        demo.kubevirt.io/model: ten-to-one
+        os.template.kubevirt.io/fedora: "true"
+      annotations:
+        description: Fedora VM, 10:1 CPU overcommit reservation
+    spec:
+      runStrategy: Always
+      template:
+        metadata:
+          labels:
+            kubevirt.io/domain: "${NAME}"
+            demo.kubevirt.io/name: cpu-overcommit
+            demo.kubevirt.io/model: ten-to-one
+        spec:
+          nodeSelector:
+            overcommit-node: "true"
+          tolerations:
+            - key: overcommit-node
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
+          domain:
+            cpu:
+              cores: 1
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "1Gi"
+              limits:
+                cpu: "1"
+                memory: "1Gi"
+            devices:
+              disks:
+                - name: containerdisk
+                  disk:
+                    bus: virtio
+                - name: cloudinitdisk
+                  disk:
+                    bus: virtio
+              interfaces:
+                - name: default
+                  masquerade: {}
+                  model: virtio
+              networkInterfaceMultiqueue: true
+              rng: {}
+          networks:
+            - name: default
+              pod: {}
+          terminationGracePeriodSeconds: 180
+          volumes:
+            - name: containerdisk
+              containerDisk:
+                image: quay.io/containerdisks/fedora:latest
+            - name: cloudinitdisk
+              cloudInitNoCloud:
+                userData: |-
+                  #cloud-config
+                  user: fedora
+                  password: "${CLOUD_USER_PASSWORD}"
+                  chpasswd: { expire: False }
+                  ssh_pwauth: True
+parameters:
+  - name: NAME
+    description: Name for the new VM
+    generate: expression
+    from: "vm-10to1-[a-z0-9]{8}"
+  - name: CLOUD_USER_PASSWORD
+    description: Password for the cloud-init fedora user
+    value: redhat
