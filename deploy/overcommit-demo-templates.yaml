@@ -62,7 +62,7 @@ objects:
               effect: NoSchedule
           domain:
             cpu:
-              cores: 1
+              cores: 2
             resources:
               requests:
                 cpu: "2"
@@ -157,7 +157,7 @@ objects:
               effect: NoSchedule
           domain:
             cpu:
-              cores: 1
+              cores: 2
             resources:
               requests:
                 cpu: "200m"
