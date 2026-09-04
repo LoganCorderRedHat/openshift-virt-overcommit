@@ -194,6 +194,8 @@ Use this path for a customer-facing demo.
 Create 10 VMs from the 1:1 template:
 
 ```bash
+oc project overcommit-not-enabled
+
 for i in $(seq -w 1 10); do
   oc process fedora-vm-1to1 \
     -n overcommit-not-enabled \
@@ -205,6 +207,8 @@ done
 Create 10 VMs from the 10:1 template:
 
 ```bash
+oc project overcommit-enabled
+
 for i in $(seq -w 1 10); do
   oc process fedora-vm-10to1 \
     -n overcommit-enabled \
