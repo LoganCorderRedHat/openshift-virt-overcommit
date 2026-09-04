@@ -65,11 +65,11 @@ objects:
               cores: 1
             resources:
               requests:
-                cpu: "1"
-                memory: "1Gi"
+                cpu: "5"
+                memory: "8Gi"
               limits:
-                cpu: "1"
-                memory: "1Gi"
+                cpu: "5"
+                memory: "8Gi"
             devices:
               disks:
                 - name: containerdisk
@@ -160,11 +160,11 @@ objects:
               cores: 1
             resources:
               requests:
-                cpu: "100m"
-                memory: "1Gi"
+                cpu: "500m"
+                memory: "8Gi"
               limits:
-                cpu: "1"
-                memory: "1Gi"
+                cpu: "5"
+                memory: "8Gi"
             devices:
               disks:
                 - name: containerdisk
