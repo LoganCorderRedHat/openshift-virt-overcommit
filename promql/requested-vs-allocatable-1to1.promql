@@ -1,0 +1,25 @@
+label_replace(
+  sum by (node) (
+    kube_pod_container_resource_requests{resource="cpu",unit="core",namespace="overcommit-not-enabled"}
+    * on (namespace, pod) group_left(node)
+    kube_pod_info{namespace="overcommit-not-enabled"}
+    * on (node) group_left(label_demo_overcommit)
+    kube_node_labels{label_demo_overcommit="one-to-one"}
+  ),
+  "metric",
+  "CPU requested",
+  "node",
+  ".*"
+)
+or
+label_replace(
+  sum by (node) (
+    kube_node_status_allocatable{resource="cpu",unit="core"}
+    * on (node) group_left(label_demo_overcommit)
+    kube_node_labels{label_demo_overcommit="one-to-one"}
+  ),
+  "metric",
+  "CPU allocatable",
+  "node",
+  ".*"
+)

@@ -1,0 +1,3 @@
+sum by (namespace, pod) (
+  rate(container_cpu_usage_seconds_total{namespace=~"overcommit-not-enabled|overcommit-enabled",pod=~"virt-launcher-.*",container="compute"}[1m])
+)
